@@ -1,6 +1,7 @@
 #include "raylib.h"
 #include <vector>
 #include <iostream>
+#include <string>
 
 // 2D vector
 typedef struct vec {
@@ -15,6 +16,9 @@ struct object {
   vec force;
 
   float mass;
+  float radius; // Only circles sadly, who needs other stuff anyways
+
+  Color color;
 };
 
 // Function defs, the rest is under main
@@ -29,32 +33,45 @@ vec gravity = { 0, 9.81f };
 
 int main(void) {
   // Raylib stuff
-  const int screenWidth = 800;
-  const int screenHeight = 450;
+  const int screenWidth = 1366;
+  const int screenHeight = 768;
   
   InitWindow(screenWidth, screenHeight, "fiziks");
   SetTargetFPS(60);
 
-  object circle = {
-    {100, 0}, // Start position
-    {0, 0}, // Start velocity
+  object circle1 = {
+    {0, 500}, // Start position
+    {50, -50}, // Start velocity
     {0, 0}, // Start force
-    1 // Mass
+    1, // Mass
+    10, // Radius
+    MAROON, // Color
   };
 
-  world.push_back(&circle);
+  object circle2 = {
+    {0, 500},
+    {50, -40},
+    {0, 0},
+    10,
+    20,
+    BLUE,
+  };
 
-  Vector2 ballPosition = { circle.position.x, circle.position.y };
+  world.push_back(&circle1);
+  world.push_back(&circle2);
 
   while (!WindowShouldClose()) {
     BeginDrawing();
     
     ClearBackground(BLACK);
-    DrawText("Hey there!", 190, 200, 20, LIGHTGRAY);
    
     step(0.1);
-    ballPosition = { circle.position.x, circle.position.y };
-    DrawCircleV(ballPosition, 50, MAROON);
+
+    for(auto obj : world) {
+      Vector2 ballPosition = { obj->position.x, obj->position.y  };
+      DrawCircleV(ballPosition, obj->radius, obj->color);
+      DrawText(std::to_string(obj->mass).c_str(), obj->position.x + obj->radius, obj->position.y + obj->radius, 2 * obj->radius, obj->color);
+    }
 
     EndDrawing();
   }

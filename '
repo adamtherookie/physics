@@ -1,0 +1,130 @@
+#include "raylib.h"
+#include <vector>
+#include <string>
+#include <iostream>
+#include <cmath>
+
+// 2D vector
+typedef struct vec {
+  double x;
+  double y;
+} vec;
+
+// An object, has a position, velocity, force applied to it, mass, and other stuff
+struct object {
+  vec position;
+  vec velocity;
+  vec force;
+
+  double mass;
+  double radius = 0; // I don't know why but we'll just be simulating circles for now
+
+  Color color;
+};
+
+// Function defs, the rest is under main
+void addObject(object *obj); // Add object to the world
+void step(double dt); // Simulate the damn thing!
+
+// Contains all objects currently being simulated
+std::vector<object *> world;
+
+// Some constants
+vec gravity = { 0, 9.81 };
+double gravitation_const = 0.0000000000667430;
+
+int main(void) {
+  // Raylib stuff
+  const int screenWidth = 1366;
+  const int screenHeight = 769;
+  
+  InitWindow(screenWidth, screenHeight, "fiziks");
+  SetTargetFPS(60);
+
+  object circle1 = {
+    {100, 0}, // Start position
+    {0, 0}, // Start velocity
+    {0, 0}, // Start force
+    999999, // Mass
+    10, // Radius
+    MAROON
+  };
+
+  object circle2 = {
+    {500, 0},
+    {0, 0}, 
+    {0, 0},
+    9999999,
+    100,
+    BLUE
+  };
+
+  world.push_back(&circle1);
+  world.push_back(&circle2);
+
+  while(!WindowShouldClose()) {
+    BeginDrawing();
+    
+    ClearBackground(BLACK);
+
+    DrawFPS(5, 5);
+
+    for(auto obj : world) {
+      step(0.0001);
+
+      DrawText((std::to_string(obj->mass).substr(0, std::to_string(obj->mass).find_last_not_of('0')+1) + "kg").c_str(),
+                obj->position.x + obj->radius,
+                obj->position.y + obj->radius,
+                20,
+                obj->color
+              );
+
+      Vector2 objPosition = { obj->position.x, obj->position.y };
+      DrawCircleV(objPosition, obj->radius, obj->color);
+    }
+
+    EndDrawing();
+  }
+  
+  CloseWindow();
+
+  return 0;
+}
+
+void addObject(object *obj) {
+  world.push_back(obj);
+}
+
+void step(double dt) {
+  for(auto obj : world) {
+    obj->force.y += obj->mass * gravity.y;
+
+    for(auto other : world) {
+      if (obj == other) continue;
+
+      double dist = sqrt((obj->position.x - other->position.x) * (obj->position.x - other->position.x) - (obj->position.y - other->position.y) * (obj->position.y - other->position.y));
+
+      double force =(obj->mass * other->mass) / ((dist) * (dist));
+      double ang = atan2(obj->position.y - other->position.y, obj->position.x - other->position.x);
+
+      obj->force.y += force / sin(ang) * dt;
+      obj->force.x += force / cos(ang) * dt;
+
+      std::cout << "Force on x-axis: " << obj->force.x << "N\n";
+    }
+
+    obj->velocity.x += (obj->force.x / obj->mass) * dt;
+    obj->velocity.y += (obj->force.y / obj->mass) * dt;
+
+    std::cout << "Velocity on x-axis" << obj->velocity.x << "m/s\n";
+
+    obj->position.x += obj->velocity.x * dt;
+    obj->position.y += obj->velocity.y * dt;
+
+    std::cout << "X Pos: " << obj->position.x << "m\n";
+
+    obj->force.x = 0;
+    obj->force.y = 0; // Reset net force at the end
+  }
+}
+
