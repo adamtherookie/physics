@@ -45,7 +45,7 @@ float k = 1; // Friction on the screen edges
 // Define the objects you want to simulate here:
 object circle1 = {
   { 500, 300 },  // position
-  { 10, -50 },   // velocity
+  { 10, -60 },   // velocity
   { 0, 0 },      // force
 
   20,            // radius
@@ -60,7 +60,7 @@ object circle2 = {
   { -50, -50 },
   { 0, 0 },
 
-  50,
+  20,
   10,
   0.65,
 

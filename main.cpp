@@ -1,10 +1,15 @@
 #include "raylib.h"
 #include <vector>
 #include <stdlib.h>
+#include <cmath>
 
 #include "config.h"
 
 std::vector<object *> universe;
+
+float dist(vec a, vec b) {
+  return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
 
 // The actual update function
 void step(float dt) {
@@ -41,6 +46,25 @@ void step(float dt) {
       obj->velocity.x *= -obj->bounciness;
       obj->force.y += -k * obj->velocity.y;
       obj->force.x += -k * obj->velocity.x;
+    }
+
+    for (auto other : universe) {
+      if(obj == other) continue;
+      
+      float distance = dist(obj->position, other->position);
+      
+      if (distance < obj->radius + other->radius) {
+        vec n;
+        n.x = (other->position.x - obj->position.x) / distance;
+        n.y = (other->position.y - obj->position.y) / distance;
+        float p = 2 * (obj->velocity.x * n.x + obj->velocity.y * n.y - other->velocity.x * n.x - other->velocity.y * n.y)  / (obj->mass + other->mass);
+
+        obj->velocity.x -= p * obj->mass * n.x;
+        obj->velocity.y -= p * obj->mass * n.y;
+
+        other->velocity.x += p * obj->mass * n.x;
+        other->velocity.y += p * obj->mass * n.y;
+      }
     }
 
     // Add the effect of gravity to the Y-force, we have: P = m*g
