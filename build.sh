@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/sh
 
-g++ main.cpp -o fiziks -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+g++ main.cpp -lraylib -o physics
 
