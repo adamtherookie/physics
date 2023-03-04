@@ -40,7 +40,7 @@ const int screenHeight = 768;
 // Gravity on planet earth (change if you want to simulate physics elsewhere)
 vec gravity = { 0, 9.81 };
 
-float k = 1; // Friction on the screen edges
+float k = 100; // Friction on the screen edges
 
 // Define the objects you want to simulate here:
 object circle1 = {

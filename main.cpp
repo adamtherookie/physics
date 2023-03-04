@@ -127,8 +127,11 @@ int main(void) {
 
       // Draw some info about each object (if the option is enabled)
       if(extra_info) {
-        DrawText(("Mass: " + std::to_string(obj->mass)).c_str(), obj->position.x + obj->radius, obj->position.y - obj->radius, obj->radius / 2, obj->color);
+        DrawText(("Mass: " + std::to_string(obj->mass) + "kg").c_str(), obj->position.x + obj->radius, obj->position.y - obj->radius, obj->radius / 2, obj->color);
         DrawText(("Elasticity: " + std::to_string(obj->bounciness)).c_str(), obj->position.x + obj->radius, obj->position.y - 1.5 * obj->radius, obj->radius / 2, obj->color);
+
+        // Current velocity:
+        DrawText(("Velocity: (" + std::to_string(obj->velocity.x) + "," + std::to_string(obj->velocity.y) + ")").c_str(), obj->position.x + obj->radius, obj->position.y - 2 * obj->radius, obj->radius / 2, obj->color);
       }
     }
 
@@ -139,9 +142,9 @@ int main(void) {
         { 0, 0 },
         { 0, 0 },
 
-        20,
-        2,
-        0.6,
+        rand() % 30 + 20,
+        rand() % 999 + 1,
+        ((float)rand() / RAND_MAX),
 
         (Color){rand() % 255, rand() % 255, rand() % 255, 255}
       };
