@@ -45,11 +45,11 @@ float k = 1; // Friction on the screen edges
 // Define the objects you want to simulate here:
 object circle1 = {
   { 500, 300 },  // position
-  { 10, -60 },   // velocity
+  { 10, -56 },   // velocity
   { 0, 0 },      // force
 
   20,            // radius
-  5,             // mass
+  2,             // mass
   0.6,
 
   MAROON         // color
@@ -61,10 +61,22 @@ object circle2 = {
   { 0, 0 },
 
   20,
-  10,
+  2,
   0.65,
 
   BLUE
+};
+
+object circle3 = {
+  { 100, 50 },
+  { 0, -100 },
+  { 100, 0 },
+
+  40,
+  2,
+  0.4,
+
+  GREEN
 };
 
 #endif

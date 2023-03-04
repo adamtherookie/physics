@@ -1,7 +1,9 @@
 #include "raylib.h"
 #include <vector>
-#include <stdlib.h>
 #include <cmath>
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 #include "config.h"
 
@@ -94,13 +96,23 @@ int main(void) {
   InitWindow(screenWidth, screenHeight, "physics");
   SetTargetFPS(60);
 
-  universe.push_back(&circle1);
-  universe.push_back(&circle2);
+  //universe.push_back(&circle1);
+  //universe.push_back(&circle2);
+  //universe.push_back(&circle3);
+
+  // Initialize seed
+  std::srand(std::time(nullptr));
+
+  // Show info or not
+  bool extra_info = false;
 
   // The update loop
   while(!WindowShouldClose()) {
     BeginDrawing();
     
+    // Draw current FPS
+    DrawFPS(10, 10);
+
     ClearBackground(BLACK);
     
     step(0.1); // We chose dt = 0.1 as a nice step for our update function
@@ -112,9 +124,44 @@ int main(void) {
     for (auto obj : universe) {
       Vector2 ballPosition = { obj->position.x, obj->position.y };
       DrawCircleV(ballPosition, obj->radius, obj->color);
+
+      // Draw some info about each object (if the option is enabled)
+      if(extra_info) {
+        DrawText(("Mass: " + std::to_string(obj->mass)).c_str(), obj->position.x + obj->radius, obj->position.y - obj->radius, obj->radius / 2, obj->color);
+        DrawText(("Elasticity: " + std::to_string(obj->bounciness)).c_str(), obj->position.x + obj->radius, obj->position.y - 1.5 * obj->radius, obj->radius / 2, obj->color);
+      }
+    }
+
+    // If the left mouse button is pressed, spawn a new object randomly
+    if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+      object *new_obj = new object {
+        { GetMousePosition().x, GetMousePosition().y },
+        { 0, 0 },
+        { 0, 0 },
+
+        20,
+        2,
+        0.6,
+
+        (Color){rand() % 255, rand() % 255, rand() % 255, 255}
+      };
+      universe.push_back(new_obj);
+
+      std::cout << "CLICKED\n";
+    }
+
+    // Toggle info
+    if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+      if(extra_info) extra_info = false;
+      else extra_info = true;
     }
 
     EndDrawing();
+  }
+
+  // Free memory
+  for(auto obj : universe) {
+    delete obj;
   }
 
   return 0;
